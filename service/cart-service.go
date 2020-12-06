@@ -27,14 +27,16 @@ func (cs CartService) GetCart() (*[]model.Cart, error) {
 }
 
 // StoreCart service for inserting cart to repo
-func (cs CartService) StoreCart(payload *request.CartRequest) *model.Cart {
+func (cs CartService) StoreCart(payload *request.CartRequest) (*model.Cart, error) {
 	value := &model.Cart{
 		ProductID: payload.ProductID,
 		Name:      payload.Name,
 		Color:     payload.Color,
 	}
 
-	cs.Repository.Insert(value)
+	if _, err := cs.Repository.Insert(value); err != nil {
+		return &model.Cart{}, err
+	}
 
-	return value
+	return value, nil
 }

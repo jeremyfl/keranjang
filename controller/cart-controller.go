@@ -35,7 +35,10 @@ func (cc CartController) Post(c echo.Context) error {
 		return GenerateResponse(c, 400, "something went wrong with your request", request)
 	}
 
-	cart := cc.Service.StoreCart(request)
+	cart, err := cc.Service.StoreCart(request)
+	if err != nil {
+		return GenerateResponse(c, 500, "something went wrong with our system", nil)
+	}
 
 	return GenerateResponse(c, 201, "cart created", cart)
 }

@@ -1,15 +1,23 @@
 package main
 
 import (
+	"log"
+
 	"github.com/jeremylombogia/keranjang/controller"
 	"github.com/jeremylombogia/keranjang/internal"
 	"github.com/jeremylombogia/keranjang/repositories"
 	"github.com/jeremylombogia/keranjang/service"
+	"github.com/joho/godotenv"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 )
 
 func main() {
+	err := godotenv.Load()
+	if err != nil {
+		log.Fatal("Error loading .env file")
+	}
+
 	// Echo instance
 	e := echo.New()
 
@@ -19,7 +27,7 @@ func main() {
 
 	redisClient := internal.NewDatabaseClient()
 
-	repo := repositories.NewCartRepo(redisClient)
+	repo := repositories.NewCartRedisRepo(redisClient)
 	service := service.NewCartService(repo)
 	controller := controller.NewCartController(service)
 

@@ -8,7 +8,7 @@ import (
 // ICartService invoke cart service
 type ICartService interface {
 	GetCart() (*[]model.Cart, error)
-	StoreCart(payload *request.CartRequest) *model.Cart
+	StoreCart(payload *request.CartRequest) (*model.Cart, error)
 }
 
 // ICartRepo invoke cart repo

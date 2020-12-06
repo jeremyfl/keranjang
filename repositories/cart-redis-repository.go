@@ -8,8 +8,8 @@ import (
 	"github.com/jeremylombogia/keranjang/model"
 )
 
-// NewCartRepo initialize cart repositories
-func NewCartRepo(dbClient *redis.Client) *CartRepoModel {
+// NewCartRedisRepo initialize cart repositories
+func NewCartRedisRepo(dbClient *redis.Client) *CartRepoModel {
 	return &CartRepoModel{dbClient}
 }
 
@@ -32,16 +32,19 @@ func (cr CartRepoModel) Get() (*[]model.Cart, error) {
 		panic(err.Error())
 	}
 
-	return &[]model.Cart{
-		cart,
-	}, nil
+	return &[]model.Cart{cart}, nil
 }
 
 // Insert inserting the repo to database
 func (cr CartRepoModel) Insert(payload *model.Cart) (*model.Cart, error) {
-	value, _ := json.Marshal(payload)
+	value, err := json.Marshal(payload)
+	if err != nil {
+		return nil, err
+	}
 
-	cr.Client.Set(ctx, "cart", value, 0).Err()
+	if err = cr.Client.Set(ctx, "cart", value, 0).Err(); err != nil {
+		return nil, err
+	}
 
 	return payload, nil
 }
