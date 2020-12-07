@@ -27,17 +27,29 @@ func (cr CartRepoModel) Get() (*[]model.Cart, error) {
 		panic(err.Error())
 	}
 
-	var cart model.Cart
+	var cart []model.Cart
 	if err := json.Unmarshal([]byte(result), &cart); err != nil {
 		panic(err.Error())
 	}
 
-	return &[]model.Cart{cart}, nil
+	return &cart, nil
 }
 
 // Insert inserting the repo to database
 func (cr CartRepoModel) Insert(payload *model.Cart) (*model.Cart, error) {
-	value, err := json.Marshal(payload)
+	var newCart []model.Cart
+
+	previousCart, err := cr.Get()
+	if err != nil {
+		return nil, err
+	}
+
+	for _, carts := range *previousCart {
+		newCart = append(newCart, carts)
+		newCart = append(newCart, *payload)
+	}
+
+	value, err := json.Marshal(newCart)
 	if err != nil {
 		return nil, err
 	}
